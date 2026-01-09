@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../ResearchAssistant.Api/ResearchAssistant.Api.csproj" />
+  <Project Path="AI-Powered Virtual Research &amp; Knowledge Assistant.csproj" />
+</Solution>

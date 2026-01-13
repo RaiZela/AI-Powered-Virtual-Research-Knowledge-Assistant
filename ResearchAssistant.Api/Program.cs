@@ -46,10 +46,17 @@ builder.Services.Configure<FormOptions>(o =>
     o.MultipartBodyLengthLimit = 200 * 1024 * 1024; // 200 MB
 });
 
-builder.Services.AddScoped<IDocumentsService, DocumentsService>();
+builder.Services.AddScoped<IOcrService, OcrService>();
 builder.Services.AddScoped<ILanguageDetectionService, AzureLanguageDetectionService>();
 builder.Services.AddScoped<INerService, NerService>();
 builder.Services.AddScoped<IKeyPhraseService,KeyPhraseService>();
+builder.Services.AddScoped<IPiiService,PiiService>();
+builder.Services.AddScoped<IOcrPipeline, OcrPipeline>();
+builder.Services.AddScoped<IOcrResultStore, BlobOcrResultStore>();
+builder.Services.AddScoped<IDocumentsService, DocumentsService>();
+builder.Services.AddSingleton<IOcrJobQueue, OcrJobQueue>();
+builder.Services.AddScoped<IOcrJobProcessor, OcrJobProcessor>();
+builder.Services.AddHostedService<OcrWorker>();
 
 
 var app = builder.Build();
@@ -150,5 +157,18 @@ app.MapPost("/keyphrases/batch", async (List<string> request, IKeyPhraseService 
 })
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status400BadRequest);
+
+app.MapPost("/pii/redact", async (TextDocumentInput request, IPiiService pii, CancellationToken ct) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Text))
+        return Results.BadRequest("Text is required.");
+
+    var result = await pii.RedactAsync(request.Text, ct);
+    return Results.Ok(result);
+})
+.Produces(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status400BadRequest);
+
+
 app.Run();
 

@@ -5,15 +5,15 @@ using System.Text.Json;
 
 namespace BLL.Services;
 
-public interface IAzureVisionReadOcrService
+public interface IOcrService
 {
     Task<string> ExtractTextAsync(Stream content, string contentType, CancellationToken ct = default);
 }
-public class AzureVisionReadOcrService : IAzureVisionReadOcrService
+public class OcrService : IOcrService
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _config;
-    public AzureVisionReadOcrService(IHttpClientFactory httpClientFactory, IConfiguration config)
+    public OcrService(IHttpClientFactory httpClientFactory, IConfiguration config)
     {
         _httpClientFactory = httpClientFactory;
         _config = config;

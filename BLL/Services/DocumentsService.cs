@@ -20,11 +20,12 @@ public class DocumentsService : IDocumentsService
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly IConfiguration _config;
-
-    public DocumentsService(BlobServiceClient blobServiceClient, IConfiguration config)
+    private readonly IOcrJobQueue _jobQueue;
+    public DocumentsService(BlobServiceClient blobServiceClient, IConfiguration config, IOcrJobQueue ocrJobQueue)
     {
         _blobServiceClient = blobServiceClient;
         _config = config;
+        _jobQueue = ocrJobQueue;
     }
     public async Task<ApiReturn<FileUploadBlobResult>> UploadDocument(
         Stream file,
@@ -92,14 +93,25 @@ public class DocumentsService : IDocumentsService
             ["originalname"] = fileName,
             ["contenttype"] = contentType,
             ["uploadedat"] = DateTimeOffset.UtcNow.ToString("O"),
-            ["source"] = source ?? "unknown",   // you can pass from query/form later
+            ["source"] = source ?? "unknown",   
             ["language"] = language ?? "unknown"
         };
 
+        if (file.CanSeek) file.Position = 0;
+
         await blobClient.UploadAsync(file, new BlobUploadOptions
         {
+            HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
             Metadata = metadata
         });
+        await _jobQueue.EnqueueAsync(new OcrJob(
+    DocumentId: blobName,          
+    BlobName: blobName,
+    OriginalFileName: fileName!,
+    ContentType: contentType!,
+    Source: source,
+    Language: language
+));
 
         return new ApiReturn<FileUploadBlobResult>
         {

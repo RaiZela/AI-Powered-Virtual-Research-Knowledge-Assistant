@@ -1,5 +1,6 @@
 <Solution>
-  <Project Path="../BLL/BLL.csproj" />
-  <Project Path="../ResearchAssistant.Api/ResearchAssistant.Api.csproj" />
-  <Project Path="../Shared/Shared.csproj" />
+  <Folder Name="/Solution Items/" />
+  <Project Path="BLL/BLL.csproj" />
+  <Project Path="ResearchAssistant.Api/ResearchAssistant.Api.csproj" />
+  <Project Path="Shared/Shared.csproj" />
 </Solution>

@@ -1,0 +1,6 @@
+@ResearchAssistant.Api_HostAddress = http://localhost:5156
+
+GET {{ResearchAssistant.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -49,11 +49,11 @@ public class OcrService : IOcrService
 
         var operationLocation = values.First();
 
-        const int maxAttempts = 30;
+        const int maxAttempts = 180;
 
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
-            await Task.Delay(TimeSpan.FromSeconds(1.2), ct);
+            await Task.Delay(TimeSpan.FromSeconds(2), ct);
 
             using var getReq = new HttpRequestMessage(HttpMethod.Get, operationLocation);
             getReq.Headers.Add("Ocp-Apim-Subscription-Key", key);

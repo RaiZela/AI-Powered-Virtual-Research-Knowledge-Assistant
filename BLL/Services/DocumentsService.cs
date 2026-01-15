@@ -83,8 +83,8 @@ public class DocumentsService : IDocumentsService
         var container = _blobServiceClient.GetBlobContainerClient(containerName);
         await container.CreateIfNotExistsAsync();
 
-        //unique blob name
-        var blobName = $"{Guid.NewGuid()}{extension}";
+       var id = Guid.NewGuid().ToString();     
+        var blobName = $"{id}{extension}";
 
         var blobClient = container.GetBlobClient(blobName);
 
@@ -105,7 +105,7 @@ public class DocumentsService : IDocumentsService
             Metadata = metadata
         });
         await _jobQueue.EnqueueAsync(new OcrJob(
-    DocumentId: blobName,          
+    DocumentId: id,          
     BlobName: blobName,
     OriginalFileName: fileName!,
     ContentType: contentType!,
